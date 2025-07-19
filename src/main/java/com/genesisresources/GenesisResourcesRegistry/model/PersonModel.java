@@ -1,14 +1,32 @@
 package com.genesisresources.GenesisResourcesRegistry.model;
 
-public class UserModel {
 
-    Long ID;
-    String Name;
-    String Surname;
-    String PersonID;
-    String Uuid;
+import jakarta.persistence.*;
 
-    public UserModel(Long ID, String name, String surname, String personID, String uuid) {
+
+@Entity
+@Table(name = "Persons")
+public class PersonModel {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
+    private Long ID;
+
+    @Column(nullable = false)
+    private String Name;
+
+    @Column
+    private String Surname;
+
+    @Column(nullable = false, unique = true)
+    private String PersonID;
+
+    @Column(nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String Uuid;
+
+    public PersonModel(Long ID, String name, String surname, String personID, String uuid) {
         this.ID = ID;
         Name = name;
         Surname = surname;

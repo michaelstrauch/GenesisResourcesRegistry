@@ -1,4 +1,4 @@
 package com.genesisresources.GenesisResourcesRegistry.controller;
 
-public class UserController {
+public class PersonController {
 }

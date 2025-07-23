@@ -2,36 +2,44 @@ package com.genesisresources.GenesisResourcesRegistry.service;
 
 import com.genesisresources.GenesisResourcesRegistry.model.PersonModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.events.Event;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class PersonService {
 
     @Autowired
-    PersonModel userModel;
+    JdbcTemplate jdbcTemplate;
 
-    List<PersonModel> userList = new ArrayList<>();
+    @Autowired
+    PersonIDImporter iDimport;
 
-    public void addUser(PersonModel userModel) {
-        userList.add(userModel);
+    public void createUser(PersonModel personModel) {
+        String query = "insert into Persons (name, surname, personID) values(?,?,?)";
+        jdbcTemplate.update(query, personModel.getName(),personModel.getSurname(), uniqueIDSelector());
     }
 
-    public PersonModel getUserInfo(Long iD) {
-        PersonModel foundUser = null;
-        for (PersonModel model : userList) {
-            if(model.getID().equals(iD)) {
-                foundUser = model;
+    public List<String> usedIDlist() {
+        List<String> usedID = jdbcTemplate.query("select PersonID from persons",
+                (result, rowNum) -> result.getString("PersonID"));
+        return usedID;
+    }
 
+    public String uniqueIDSelector() {
+        for (String iD : iDimport.getPersonIDListCopy()) {
+            if(!usedIDlist().contains(iD)) {
+                return iD;
             }
-        } return foundUser;
-    }
-
-    public List<PersonModel> getAllUsers() {
-        return userList;
-    }
-
-    public void updateUser(Long iD) {
-
+        }
+        return null;
     }
 }
+
+

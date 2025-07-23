@@ -3,6 +3,8 @@ package com.genesisresources.GenesisResourcesRegistry.model;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 
 @Entity
 @Table(name = "Persons")
@@ -14,63 +16,58 @@ public class PersonModel {
     private Long ID;
 
     @Column(nullable = false)
-    private String Name;
+    private String name;
 
     @Column
-    private String Surname;
+    private String surname;
 
     @Column(nullable = false, unique = true)
-    private String PersonID;
+    private String personID;
 
     @Column(nullable = false, unique = true)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String Uuid;
+    private String uuid;
 
-    public PersonModel(Long ID, String name, String surname, String personID, String uuid) {
-        this.ID = ID;
-        Name = name;
-        Surname = surname;
-        PersonID = personID;
-        Uuid = uuid;
+    public PersonModel(String name, String surname, String personID) {
+        this.name = name;
+        this.surname = surname;
+        this.personID = personID;
+        setUuid();
+
     }
 
     public Long getID() {
         return ID;
     }
 
-    public void setID(Long ID) {
-        this.ID = ID;
-    }
-
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getSurname() {
-        return Surname;
+        return surname;
     }
 
     public void setSurname(String surname) {
-        Surname = surname;
+        this.surname = surname;
     }
 
     public String getPersonID() {
-        return PersonID;
+        return personID;
     }
 
     public void setPersonID(String personID) {
-        PersonID = personID;
+        this.personID = personID;
     }
 
     public String getUuid() {
-        return Uuid;
+        return uuid;
     }
 
-    public void setUuid(String uuid) {
-        Uuid = uuid;
+    public void setUuid() {
+        this.uuid = UUID.randomUUID().toString();
     }
 }

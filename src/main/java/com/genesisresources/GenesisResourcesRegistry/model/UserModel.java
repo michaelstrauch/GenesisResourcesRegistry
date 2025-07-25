@@ -7,13 +7,13 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name = "Persons")
-public class PersonModel {
+@Table(name = "users")
+public class UserModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Long ID;
+    private Long iD;
 
     @Column(nullable = false)
     private String name;
@@ -27,16 +27,24 @@ public class PersonModel {
     @Column(nullable = false, unique = true)
     private String uuid;
 
-    public PersonModel(String name, String surname, String personID) {
+
+    public UserModel() {
+    }
+
+    public UserModel(String name, String surname, String personID, String uuid) {
         this.name = name;
         this.surname = surname;
         this.personID = personID;
-        setUuid();
+        this.uuid = uuid;
 
     }
 
     public Long getID() {
-        return ID;
+        return iD;
+    }
+
+    public void setiD(Long iD) {
+        this.iD = iD;
     }
 
     public String getName() {
@@ -67,7 +75,7 @@ public class PersonModel {
         return uuid;
     }
 
-    public void setUuid() {
-        this.uuid = UUID.randomUUID().toString();
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

@@ -4,6 +4,7 @@ import com.genesisresources.GenesisResourcesRegistry.dto.*;
 import com.genesisresources.GenesisResourcesRegistry.model.UserModel;
 import com.genesisresources.GenesisResourcesRegistry.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping()
-    public void CreateUser(@RequestBody CreateUserDTO createdUserDTO) {
+    public void createUser(@RequestBody CreateUserDTO createdUserDTO) {
         if(!userService.usedIDlist().contains(createdUserDTO.getPersonID()) &&
             userService.importedIDs().contains(createdUserDTO.getPersonID())) {
             userService.createUser(createdUserDTO);
@@ -41,5 +42,15 @@ public class UserController {
         } else {
             return new ArrayList<>(userService.listToBasicDTO());
         }
+    }
+
+    @PutMapping()
+    public void updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
+        userService.updateUser(updateUserDTO,updateUserDTO.getiD());
+    }
+
+    @DeleteMapping("/{ID}")
+    public void deleteUser(@PathVariable Long iD) {
+        userService.deleteUser(iD);
     }
 }

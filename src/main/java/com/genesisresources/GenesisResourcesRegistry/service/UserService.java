@@ -1,12 +1,10 @@
 package com.genesisresources.GenesisResourcesRegistry.service;
 
-import com.genesisresources.GenesisResourcesRegistry.dto.CreateUserDTO;
-import com.genesisresources.GenesisResourcesRegistry.dto.GetUserBasicDTO;
-import com.genesisresources.GenesisResourcesRegistry.dto.GetUserDTO;
-import com.genesisresources.GenesisResourcesRegistry.dto.GetUserFullDTO;
+import com.genesisresources.GenesisResourcesRegistry.dto.*;
 import com.genesisresources.GenesisResourcesRegistry.model.UserModel;
 import com.genesisresources.GenesisResourcesRegistry.repository.UserRepository;
 import org.apache.catalina.User;
+import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -94,8 +92,27 @@ public class UserService {
         return DTOList;
     }
 
+    public void updateUser(UpdateUserDTO updateUserDTO, Long iD) {
+        String query = "update users set name=?,surname=? where id=?";
+        jdbcTemplate.update(query,updateUserDTO.getName(),updateUserDTO.getSurname(),iD);
+    }
+
+    public void deleteUser(Long iD) {
+        String query = "delete from users where id=?";
+        jdbcTemplate.update(query, iD);
+    }
+
+    public List<String> usedIDlist() {
+        List<String> usedID = jdbcTemplate.query("select PersonID from users",
+                (result, rowNum) -> result.getString("PersonID"));
+        return usedID;
+    }
 
 
+    public List<String> importedIDs() {
+        return iDimport.getPersonIDListCopy();
+    }
+}
 
 //    public GetBasicUserDTO getBasicUserInfo(Long id) {
 //        String query = "select * from users where id= ?";
@@ -112,17 +129,5 @@ public class UserService {
 //        ,id);
 //        return user;
 //    }
-
-    public List<String> usedIDlist() {
-        List<String> usedID = jdbcTemplate.query("select PersonID from users",
-                (result, rowNum) -> result.getString("PersonID"));
-        return usedID;
-    }
-
-
-    public List<String> importedIDs() {
-        return iDimport.getPersonIDListCopy();
-    }
-}
 
 

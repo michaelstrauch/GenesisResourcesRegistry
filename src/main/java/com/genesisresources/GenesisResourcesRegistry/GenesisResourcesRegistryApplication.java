@@ -10,13 +10,15 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication
 public class GenesisResourcesRegistryApplication {
 	public static void main(String[] args) {
-		ApplicationContext context =  SpringApplication.run(GenesisResourcesRegistryApplication.class, args);
+		SpringApplication.run(GenesisResourcesRegistryApplication.class,args);
 
-		UserService service = context.getBean(UserService.class);
-
-		CreateUserDTO user = new CreateUserDTO("john","motorkar","adada4");
-
-		service.createUser(user);
+//		ApplicationContext context =  SpringApplication.run(GenesisResourcesRegistryApplication.class, args);
+//
+//		UserService service = context.getBean(UserService.class);
+//
+//		CreateUserDTO user = new CreateUserDTO("john","motorkar","adada4");
+//
+//		service.createUser(user);
 
 
 	}

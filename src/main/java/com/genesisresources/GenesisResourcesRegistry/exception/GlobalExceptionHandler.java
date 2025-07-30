@@ -1,0 +1,22 @@
+package com.genesisresources.GenesisResourcesRegistry.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.genesisresources.GenesisResourcesRegistry.dto.ErrorResponse;
+import org.springframework.web.client.HttpClientErrorException;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(WrongPersonIdException.class)
+    public ResponseEntity<ErrorResponse> handleWrongPersonId(WrongPersonIdException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(), 400);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+}
+
+

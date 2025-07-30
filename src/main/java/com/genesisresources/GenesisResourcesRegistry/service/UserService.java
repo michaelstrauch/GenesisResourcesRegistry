@@ -1,10 +1,9 @@
 package com.genesisresources.GenesisResourcesRegistry.service;
 
 import com.genesisresources.GenesisResourcesRegistry.dto.*;
+import com.genesisresources.GenesisResourcesRegistry.exception.WrongPersonIdException;
 import com.genesisresources.GenesisResourcesRegistry.model.UserModel;
 import com.genesisresources.GenesisResourcesRegistry.repository.UserRepository;
-import org.apache.catalina.User;
-import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,13 +29,18 @@ public class UserService {
 
 
     public void createUser(CreateUserDTO dtoUser) {
-        String uuid = String.valueOf(UUID.randomUUID());
-        UserModel newUser = new UserModel();
-        newUser.setName(dtoUser.getName());
-        newUser.setSurname(dtoUser.getSurname());
-        newUser.setPersonID(dtoUser.getPersonID());
-        newUser.setUuid(uuid);
-        userRepository.save(newUser);
+        if(!usedIDlist().contains(dtoUser.getPersonID()) &&
+                importedIDs().contains(dtoUser.getPersonID())) {
+            String uuid = String.valueOf(UUID.randomUUID());
+            UserModel newUser = new UserModel();
+            newUser.setName(dtoUser.getName());
+            newUser.setSurname(dtoUser.getSurname());
+            newUser.setPersonID(dtoUser.getPersonID());
+            newUser.setUuid(uuid);
+            userRepository.save(newUser);
+        } else {
+            throw new WrongPersonIdException("PersonID doesn't exist or is already in use");
+        }
     }
 
     public UserModel getUserInfo(Long id) {

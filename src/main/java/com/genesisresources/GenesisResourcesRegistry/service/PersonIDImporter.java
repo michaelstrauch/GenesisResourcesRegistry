@@ -11,17 +11,20 @@ import java.util.Scanner;
 @Service
 public class PersonIDImporter {
     private List<String> personIDlist = new ArrayList<>();
+    //ulozit cestu inputFile do promenne
 
     @PostConstruct
     public void idImport() {
-        InputStream inputFile = getClass().getClassLoader().getResourceAsStream("personIdData.txt");
-        if (inputFile != null) {
-        Scanner reader = new Scanner(new BufferedReader(new InputStreamReader(inputFile)));
-        while (reader.hasNextLine()) {
-            String line = reader.nextLine();
-            personIDlist.add(line);}
-        } else {
-            throw new RuntimeException();
+        try (InputStream inputFile = getClass().getClassLoader().getResourceAsStream("personIdData.txt")) {
+            if (inputFile != null) {
+                Scanner reader = new Scanner(new BufferedReader(new InputStreamReader(inputFile)));
+                while (reader.hasNextLine()) {
+                    String line = reader.nextLine();
+                    personIDlist.add(line);
+                }
+            }
+        } catch (IOException ex) {
+            System.out.println("File not found" + ex.getMessage());
         }
     }
 

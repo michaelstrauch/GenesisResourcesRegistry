@@ -1,10 +1,12 @@
 package com.genesisresources.GenesisResourcesRegistry.service;
 
 import com.genesisresources.GenesisResourcesRegistry.dto.*;
+import com.genesisresources.GenesisResourcesRegistry.exception.UserNotFoundException;
 import com.genesisresources.GenesisResourcesRegistry.exception.WrongPersonIdException;
 import com.genesisresources.GenesisResourcesRegistry.model.UserModel;
 import com.genesisresources.GenesisResourcesRegistry.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -43,39 +45,47 @@ public class UserService {
         }
     }
 
-    public UserModel getUserInfo(Long id) {
+    public UserModel getUserInfo(Long iD) {
         String query = "select * from users where id= ?";
-       UserModel user = jdbcTemplate.queryForObject(query, new RowMapper<UserModel>() {
-           @Override
-           public UserModel mapRow(ResultSet result, int rowNum) throws SQLException {
-               UserModel foundUser = new UserModel();
-               foundUser.setiD(result.getLong("ID"));
-               foundUser.setName(result.getString("Name"));
-               foundUser.setSurname(result.getString("Surname"));
-               foundUser.setPersonID(result.getString("PersonID"));
-               foundUser.setUuid(result.getString("Uuid"));
-               return foundUser;
-           }
-       }
-       ,id);
-       return user;
+        try {
+            UserModel user = jdbcTemplate.queryForObject(query, new RowMapper<UserModel>() {
+                        @Override
+                        public UserModel mapRow(ResultSet result, int rowNum) throws SQLException {
+                            UserModel foundUser = new UserModel();
+                            foundUser.setiD(result.getLong("ID"));
+                            foundUser.setName(result.getString("Name"));
+                            foundUser.setSurname(result.getString("Surname"));
+                            foundUser.setPersonID(result.getString("PersonID"));
+                            foundUser.setUuid(result.getString("Uuid"));
+                            return foundUser;
+                        }
+                    }
+                    , iD);
+            return user;
+        } catch (EmptyResultDataAccessException ex) {
+            throw new UserNotFoundException("User with Id: "+ iD + " not found");
+        }
     }
 
     public List<UserModel> getAllUsers() {
         String query = "select * from users";
-       List<UserModel> userList = jdbcTemplate.query(query, new RowMapper<UserModel>() {
-            @Override
-            public UserModel mapRow(ResultSet result, int rowNum) throws SQLException {
-                UserModel foundUser = new UserModel();
-                foundUser.setiD(result.getLong("ID"));
-                foundUser.setName(result.getString("Name"));
-                foundUser.setSurname(result.getString("Surname"));
-                foundUser.setPersonID(result.getString("PersonID"));
-                foundUser.setUuid(result.getString("Uuid"));
-                return foundUser;
-            }
-        });
-        return userList;
+       try {
+           List<UserModel> userList = jdbcTemplate.query(query, new RowMapper<UserModel>() {
+               @Override
+               public UserModel mapRow(ResultSet result, int rowNum) throws SQLException {
+                   UserModel foundUser = new UserModel();
+                   foundUser.setiD(result.getLong("ID"));
+                   foundUser.setName(result.getString("Name"));
+                   foundUser.setSurname(result.getString("Surname"));
+                   foundUser.setPersonID(result.getString("PersonID"));
+                   foundUser.setUuid(result.getString("Uuid"));
+                   return foundUser;
+               }
+           });
+           return userList;
+       } catch (EmptyResultDataAccessException ex) {
+           throw new UserNotFoundException("No users found");
+       }
     }
 
     public List<GetUserBasicDTO> listToBasicDTO() {
@@ -98,12 +108,20 @@ public class UserService {
 
     public void updateUser(UpdateUserDTO updateUserDTO, Long iD) {
         String query = "update users set name=?,surname=? where id=?";
-        jdbcTemplate.update(query,updateUserDTO.getName(),updateUserDTO.getSurname(),iD);
+        try {
+            jdbcTemplate.update(query, updateUserDTO.getName(), updateUserDTO.getSurname(), iD);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new UserNotFoundException("User with Id: "+ iD + " not found");
+        }
     }
 
     public void deleteUser(Long iD) {
         String query = "delete from users where id=?";
-        jdbcTemplate.update(query, iD);
+        try {
+            jdbcTemplate.update(query, iD);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new UserNotFoundException("User with Id: "+ iD + " not found");
+        }
     }
 
     public List<String> usedIDlist() {
@@ -118,20 +136,5 @@ public class UserService {
     }
 }
 
-//    public GetBasicUserDTO getBasicUserInfo(Long id) {
-//        String query = "select * from users where id= ?";
-//        GetBasicUserDTO user = jdbcTemplate.queryForObject(query, new RowMapper<GetBasicUserDTO>() {
-//            @Override
-//            public GetBasicUserDTO mapRow(ResultSet result, int rowNum) throws SQLException {
-//                GetBasicUserDTO foundUser = new GetBasicUserDTO();
-//                foundUser.setiD(result.getLong("ID"));
-//                foundUser.setName(result.getString("Name"));
-//                foundUser.setSurname(result.getString("Surname"));
-//                return foundUser;
-//            }
-//        }
-//        ,id);
-//        return user;
-//    }
 
 

@@ -3,7 +3,6 @@ package com.genesisresources.GenesisResourcesRegistry.model;
 
 import jakarta.persistence.*;
 
-import java.util.UUID;
 
 
 @Entity

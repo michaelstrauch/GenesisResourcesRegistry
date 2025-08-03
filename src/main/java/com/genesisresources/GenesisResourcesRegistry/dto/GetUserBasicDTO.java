@@ -2,14 +2,14 @@ package com.genesisresources.GenesisResourcesRegistry.dto;
 
 import com.genesisresources.GenesisResourcesRegistry.model.UserModel;
 
-public class GetUserBasicDTO implements GetUserDTO {
+public class GetUserBasicDTO {
 
     private Long iD;
     private String name;
     private String surname;
 
-    public GetUserBasicDTO() {
-    }
+//    public GetUserBasicDTO() {
+//    }
 
     public GetUserBasicDTO(UserModel userModel) {
         this.iD = userModel.getID();
@@ -21,23 +21,12 @@ public class GetUserBasicDTO implements GetUserDTO {
         return iD;
     }
 
-    public void setiD(Long iD) {
-        this.iD = iD;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getSurname() {
         return surname;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
 }

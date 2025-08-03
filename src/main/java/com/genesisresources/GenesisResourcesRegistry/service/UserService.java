@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,12 +22,12 @@ public class UserService {
     JdbcTemplate jdbcTemplate;
 
     @Autowired
-    PersonIDImporter iDimport;
+    PersonIDProvider iDprovider;
 
 
     public void createUser(CreateUserDTO dtoUser) {
-        if(!usedIDlist().contains(dtoUser.getPersonID()) &&
-                importedIDs().contains(dtoUser.getPersonID())) {
+        if (!usedIDlist().contains(dtoUser.getPersonID()) &&
+                iDprovider.getPersonIDList().contains(dtoUser.getPersonID())) {
             String query = "insert into users (Name, Surname, PersonID, Uuid) values(?,?,?,?)";
             String uuid = String.valueOf(UUID.randomUUID());
             jdbcTemplate.update(query, dtoUser.getName(), dtoUser.getSurname(), dtoUser.getPersonID(), uuid);
@@ -38,7 +37,7 @@ public class UserService {
     }
 
     public UserModel getUserInfo(Long iD) {
-        String query = "select * from users where id= ?";
+        String query = "select ID, Name, Surname, PersonID, Uuid from users where id= ?";
         try {
             UserModel user = jdbcTemplate.queryForObject(query, new RowMapper<UserModel>() {
                         @Override
@@ -55,12 +54,12 @@ public class UserService {
                     , iD);
             return user;
         } catch (EmptyResultDataAccessException ex) {
-            throw new UserNotFoundException("User with Id: "+ iD + " not found");
+            throw new UserNotFoundException("User with Id: " + iD + " not found");
         }
     }
 
     public List<UserModel> getAllUsers() {
-        String query = "select * from users";
+        String query = "select ID, Name, Surname, PersonID, Uuid from users";
         List<UserModel> userList = jdbcTemplate.query(query, new RowMapper<UserModel>() {
             @Override
             public UserModel mapRow(ResultSet result, int rowNum) throws SQLException {
@@ -80,29 +79,11 @@ public class UserService {
         }
     }
 
-    public List<GetUserBasicDTO> listToBasicDTO() {
-        List<UserModel> originList = getAllUsers();
-        List<GetUserBasicDTO> DTOList = new ArrayList<>();
-        for (UserModel userModel : originList) {
-            DTOList.add(new GetUserBasicDTO(userModel));
-        }
-        return DTOList;
-    }
-
-    public List<GetUserFullDTO> listToFullDTO() {
-        List<UserModel> originList = getAllUsers();
-        List<GetUserFullDTO> DTOList = new ArrayList<>();
-        for (UserModel userModel : originList) {
-            DTOList.add(new GetUserFullDTO(userModel));
-        }
-        return DTOList;
-    }
-
     public void updateUser(UpdateUserDTO updateUserDTO, Long iD) {
         String query = "update users set name=?,surname=? where id=?";
         int rowsAffected = jdbcTemplate.update(query, updateUserDTO.getName(), updateUserDTO.getSurname(), iD);
         if (rowsAffected == 0) {
-            throw new UserNotFoundException("User with Id: "+ iD + " not found");
+            throw new UserNotFoundException("User with Id: " + iD + " not found");
         }
     }
 
@@ -110,8 +91,8 @@ public class UserService {
         String query = "delete from users where id=?";
         String afterQuery = "alter table users auto_increment=?";
         int rowsAffected = jdbcTemplate.update(query, iD);
-        jdbcTemplate.update(afterQuery,iD);
-        if(rowsAffected == 0) {
+        jdbcTemplate.update(afterQuery, iD);
+        if (rowsAffected == 0) {
             throw new UserNotFoundException("User with Id: " + iD + " not found");
         }
     }
@@ -120,11 +101,6 @@ public class UserService {
         List<String> usedID = jdbcTemplate.query("select PersonID from users",
                 (result, rowNum) -> result.getString("PersonID"));
         return usedID;
-    }
-
-
-    public List<String> importedIDs() {
-        return iDimport.getPersonIDListCopy();
     }
 }
 

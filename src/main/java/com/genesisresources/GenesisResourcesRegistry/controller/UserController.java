@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/{iD}")
-    public GetUserDTO getUserById(@PathVariable Long iD, @RequestParam(required = false) boolean detail) {
+    public GetUserBasicDTO getUserById(@PathVariable Long iD, @RequestParam(required = false) boolean detail) {
         UserModel user = userService.getUserInfo(iD);
         if(detail) {
             return new GetUserFullDTO(user);
@@ -33,11 +33,11 @@ public class UserController {
     }
 
     @GetMapping()
-    public List<?> getAllUsers(@RequestParam(required = false) boolean detail) {
+    public List<GetUserBasicDTO> getAllUsers(@RequestParam(required = false) boolean detail) {
         if (detail) {
-            return new ArrayList<>(userService.listToFullDTO());
+            return new ArrayList<>(listToFullDTO());
         } else {
-            return new ArrayList<>(userService.listToBasicDTO());
+            return new ArrayList<>(listToBasicDTO());
         }
     }
 
@@ -49,5 +49,23 @@ public class UserController {
     @DeleteMapping("/{iD}")
     public void deleteUser(@PathVariable Long iD) {
         userService.deleteUser(iD);
+    }
+
+    public List<GetUserBasicDTO> listToBasicDTO() {
+        List<UserModel> originList = userService.getAllUsers();
+        List<GetUserBasicDTO> DTOList = new ArrayList<>();
+        for (UserModel userModel : originList) {
+            DTOList.add(new GetUserBasicDTO(userModel));
+        }
+        return DTOList;
+    }
+
+    public List<GetUserFullDTO> listToFullDTO() {
+        List<UserModel> originList = userService.getAllUsers();
+        List<GetUserFullDTO> DTOList = new ArrayList<>();
+        for (UserModel userModel : originList) {
+            DTOList.add(new GetUserFullDTO(userModel));
+        }
+        return DTOList;
     }
 }

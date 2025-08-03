@@ -1,5 +1,6 @@
 package com.genesisresources.GenesisResourcesRegistry.service;
 
+import com.genesisresources.GenesisResourcesRegistry.exception.FatalException;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +10,8 @@ import java.util.List;
 import java.util.Scanner;
 
 @Service
-public class PersonIDImporter {
+public class PersonIDProvider {
     private List<String> personIDlist = new ArrayList<>();
-    //ulozit cestu inputFile do promenne
 
     @PostConstruct
     public void idImport() {
@@ -24,11 +24,11 @@ public class PersonIDImporter {
                 }
             }
         } catch (IOException ex) {
-            System.out.println("File not found" + ex.getMessage());
+            throw new FatalException("Failed to load PersonID from file: " + ex.getMessage());
         }
     }
 
-    public List<String> getPersonIDListCopy() {
+    public List<String> getPersonIDList() {
         return new ArrayList<>(personIDlist);
     }
 }

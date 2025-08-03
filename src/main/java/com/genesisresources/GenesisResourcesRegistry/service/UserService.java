@@ -25,21 +25,25 @@ public class UserService {
     PersonIDProvider iDprovider;
 
 
-    public void createUser(CreateUserDTO dtoUser) {
-        if (!usedIDlist().contains(dtoUser.getPersonID()) &&
-                iDprovider.getPersonIDList().contains(dtoUser.getPersonID())) {
-            String query = "insert into users (Name, Surname, PersonID, Uuid) values(?,?,?,?)";
-            String uuid = String.valueOf(UUID.randomUUID());
-            jdbcTemplate.update(query, dtoUser.getName(), dtoUser.getSurname(), dtoUser.getPersonID(), uuid);
-        } else {
+    public UserModel createUser(CreateUserDTO dtoUser) {
+        if (usedIDlist().contains(dtoUser.getPersonID()) ||
+                !iDprovider.getPersonIDList().contains(dtoUser.getPersonID())) {
             throw new WrongPersonIdException("PersonID doesn't exist or is already in use");
         }
+
+        String query = "insert into users (Name, Surname, PersonID, Uuid) values(?,?,?,?)";
+        String uuid = String.valueOf(UUID.randomUUID());
+        jdbcTemplate.update(query, dtoUser.getName(), dtoUser.getSurname(), dtoUser.getPersonID(), uuid);
+
+        query = "select ID from users where PersonID = ?";
+        Long returnedId = jdbcTemplate.queryForObject(query,Long.class, dtoUser.getPersonID());
+        return new UserModel(returnedId, dtoUser.getName(), dtoUser.getSurname(), dtoUser.getPersonID(), uuid);
     }
 
     public UserModel getUserInfo(Long iD) {
         String query = "select ID, Name, Surname, PersonID, Uuid from users where id= ?";
         try {
-            UserModel user = jdbcTemplate.queryForObject(query, new RowMapper<UserModel>() {
+            return jdbcTemplate.queryForObject(query, new RowMapper<UserModel>() {
                         @Override
                         public UserModel mapRow(ResultSet result, int rowNum) throws SQLException {
                             UserModel foundUser = new UserModel();
@@ -52,7 +56,6 @@ public class UserService {
                         }
                     }
                     , iD);
-            return user;
         } catch (EmptyResultDataAccessException ex) {
             throw new UserNotFoundException("User with Id: " + iD + " not found");
         }
@@ -98,9 +101,8 @@ public class UserService {
     }
 
     public List<String> usedIDlist() {
-        List<String> usedID = jdbcTemplate.query("select PersonID from users",
+        return jdbcTemplate.query("select PersonID from users",
                 (result, rowNum) -> result.getString("PersonID"));
-        return usedID;
     }
 }
 

@@ -30,12 +30,12 @@ public class UserModel {
     public UserModel() {
     }
 
-    public UserModel(String name, String surname, String personID, String uuid) {
+    public UserModel(Long iD, String name, String surname, String personID, String uuid) {
+        this.iD = iD;
         this.name = name;
         this.surname = surname;
         this.personID = personID;
         this.uuid = uuid;
-
     }
 
     public Long getID() {

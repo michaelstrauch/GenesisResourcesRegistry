@@ -3,6 +3,7 @@ package com.genesisresources.GenesisResourcesRegistry.controller;
 import com.genesisresources.GenesisResourcesRegistry.dto.*;
 import com.genesisresources.GenesisResourcesRegistry.model.UserModel;
 import com.genesisresources.GenesisResourcesRegistry.service.UserService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,15 +18,15 @@ public class UserController {
     UserService userService;
 
     @PostMapping()
-    public void createUser(@RequestBody CreateUserDTO createdUserDTO) {
-        userService.createUser(createdUserDTO);
-
+    public GetUserFullDTO createUser(@RequestBody CreateUserDTO createdUserDTO) {
+        UserModel user = userService.createUser(createdUserDTO);
+        return new GetUserFullDTO(user);
     }
 
     @GetMapping("/{iD}")
     public GetUserBasicDTO getUserById(@PathVariable Long iD, @RequestParam(required = false) boolean detail) {
         UserModel user = userService.getUserInfo(iD);
-        if(detail) {
+        if (detail) {
             return new GetUserFullDTO(user);
         } else {
             return new GetUserBasicDTO(user);
@@ -43,7 +44,7 @@ public class UserController {
 
     @PutMapping()
     public void updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
-        userService.updateUser(updateUserDTO,updateUserDTO.getiD());
+        userService.updateUser(updateUserDTO, updateUserDTO.getiD());
     }
 
     @DeleteMapping("/{iD}")

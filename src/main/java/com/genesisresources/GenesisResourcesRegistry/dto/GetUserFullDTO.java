@@ -8,8 +8,6 @@ public class GetUserFullDTO extends GetUserBasicDTO {
     private String personID;
     private String uuid;
 
-//    public GetUserFullDTO() {
-//    }
 
     public GetUserFullDTO(UserModel userModel) {
         super(userModel);

@@ -8,8 +8,6 @@ public class GetUserBasicDTO {
     private String name;
     private String surname;
 
-//    public GetUserBasicDTO() {
-//    }
 
     public GetUserBasicDTO(UserModel userModel) {
         this.iD = userModel.getID();

@@ -92,15 +92,13 @@ public class UserService {
 
     public void deleteUser(Long iD) {
         String query = "delete from users where id=?";
-        String afterQuery = "alter table users auto_increment=?";
         int rowsAffected = jdbcTemplate.update(query, iD);
-        jdbcTemplate.update(afterQuery, iD);
         if (rowsAffected == 0) {
             throw new UserNotFoundException("User with Id: " + iD + " not found");
         }
     }
 
-    public List<String> usedIDlist() {
+    private List<String> usedIDlist() {
         return jdbcTemplate.query("select PersonID from users",
                 (result, rowNum) -> result.getString("PersonID"));
     }

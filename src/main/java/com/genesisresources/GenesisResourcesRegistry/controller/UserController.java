@@ -52,7 +52,7 @@ public class UserController {
         userService.deleteUser(iD);
     }
 
-    public List<GetUserBasicDTO> listToBasicDTO() {
+    private List<GetUserBasicDTO> listToBasicDTO() {
         List<UserModel> originList = userService.getAllUsers();
         List<GetUserBasicDTO> DTOList = new ArrayList<>();
         for (UserModel userModel : originList) {
@@ -61,7 +61,7 @@ public class UserController {
         return DTOList;
     }
 
-    public List<GetUserFullDTO> listToFullDTO() {
+    private List<GetUserFullDTO> listToFullDTO() {
         List<UserModel> originList = userService.getAllUsers();
         List<GetUserFullDTO> DTOList = new ArrayList<>();
         for (UserModel userModel : originList) {

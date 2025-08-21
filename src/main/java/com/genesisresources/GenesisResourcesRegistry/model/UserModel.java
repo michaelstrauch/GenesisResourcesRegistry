@@ -1,31 +1,14 @@
 package com.genesisresources.GenesisResourcesRegistry.model;
 
 
-import jakarta.persistence.*;
 
-
-
-@Entity
-@Table(name = "users")
 public class UserModel {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long iD;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column
     private String surname;
-
-    @Column(nullable = false, unique = true)
     private String personID;
-
-    @Column(nullable = false, unique = true)
     private String uuid;
-
 
     public UserModel() {
     }
